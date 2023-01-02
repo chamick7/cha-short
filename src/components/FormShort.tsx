@@ -42,8 +42,9 @@ const FormShort = () => {
         <button
           className="mt-8 max-w-sm bg-yellow-500 py-2 px-10 text-center duration-150 hover:bg-yellow-300"
           type="submit"
+          disabled={shortenURL.isLoading}
         >
-          Shorten
+          {shortenURL.isLoading ? 'Loading...' : 'Shorten'}
         </button>
       </form>
       {newURL && <CopyBox text={newURL} />}
