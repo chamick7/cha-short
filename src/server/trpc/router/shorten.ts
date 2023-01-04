@@ -4,7 +4,6 @@ import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import { nanoid } from 'nanoid'
 import { env } from 'src/env/server.mjs'
-import { prisma } from '@server/db/client'
 
 const shortenRequest = z.object({
   url: z.string().url(),
@@ -13,7 +12,7 @@ const shortenRequest = z.object({
 export const shortenRouter = router({
   shortURL: publicProcedure
     .input(shortenRequest)
-    .mutation(async ({ input }) => {
+    .mutation(async ({ ctx, input }) => {
       const { url } = input
 
       if (!isValidUrl(url)) {
@@ -28,7 +27,13 @@ export const shortenRouter = router({
       const shortURL = new URL(env.DOMAIN).href + 'go/' + shortId
 
       try {
-        await prisma.url.create({ data: { longURL, shortId, shortURL } })
+        const startTime = process.hrtime.bigint()
+
+        await ctx.prisma.url.create({ data: { longURL, shortId, shortURL } })
+
+        const endTime = process.hrtime.bigint()
+
+        console.log('prisma take time ', endTime - startTime)
       } catch (error) {
         return new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',

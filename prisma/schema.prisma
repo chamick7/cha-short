@@ -20,7 +20,7 @@ model Url {
   id        String   @id @default(cuid())
   longURL   String
   shortId   String   @unique
-  shortURL  String   @unique
+  shortURL  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
